@@ -13,6 +13,7 @@ jobs:
       # used to cache dependencies with a timeout
       - name: Get Date
         id: get-date
+        - name: Set output
         run: |
           echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
         shell: bash
