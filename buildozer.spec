@@ -409,7 +409,8 @@ warn_on_root = 1
 #data/audio/*.wav
 #data/images/original/*
 #
-
+android.accept_sdk_license = True
+android.skip_update = False
 
 #    -----------------------------------------------------------------------------
 #    Profiles
