@@ -1,10 +1,10 @@
 [app]
 
 # (str) Title of your application
-title = Write To Kivy
+title = Calculator risks 
 
 # (str) Package name
-package.name = KivyTest
+package.name = Podskazka
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.YourName
@@ -409,8 +409,7 @@ warn_on_root = 1
 #data/audio/*.wav
 #data/images/original/*
 #
-android.accept_sdk_license = True
-android.skip_update = False
+
 
 #    -----------------------------------------------------------------------------
 #    Profiles
