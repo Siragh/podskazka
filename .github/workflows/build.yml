@@ -16,7 +16,7 @@ jobs:
         
         run: |
         
-          run: echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
+           echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
         shell: bash
 
       - name: Cache Buildozer global directory
