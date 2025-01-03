@@ -10,19 +10,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Проверяем код из репозитория
+    # Шаг 1: Клонирование репозитория
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Устанавливаем зависимости для Buildozer
-    - name: Set up dependencies
+    # Шаг 2: Установка зависимостей
+    - name: Install dependencies
       run: |
         sudo apt update
         sudo apt install -y \
-          python3 python3-pip python3-setuptools python3-venv git zip unzip openjdk-11-jdk
+          python3 python3-pip python3-setuptools python3-venv git zip unzip openjdk-11-jdk wget
         pip install --upgrade buildozer cython
 
-    # Устанавливаем Android SDK
+    # Шаг 3: Установка Android SDK
     - name: Install Android SDK
       run: |
         mkdir -p $HOME/.buildozer/android/platform
@@ -34,7 +34,7 @@ jobs:
         $HOME/.buildozer/android/platform/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk \
           "platform-tools" "build-tools;31.0.0" "platforms;android-31"
 
-    # Проверяем и билдим проект с помощью Buildozer
+    # Шаг 4: Сборка APK
     - name: Build APK
       run: |
         buildozer android debug
