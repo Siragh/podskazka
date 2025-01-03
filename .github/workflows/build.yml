@@ -10,45 +10,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Шаг 1: Клонирование репозитория
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Шаг 2: Установка зависимостей
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt install -y \
-          python3 python3-pip python3-setuptools python3-venv git zip unzip openjdk-11-jdk wget curl
-
+        sudo apt install -y python3 python3-pip python3-setuptools python3-venv git zip unzip openjdk-11-jdk wget curl
         pip install --upgrade buildozer cython
 
-    # Шаг 3: Установка Android SDK
     - name: Install Android SDK
       run: |
-        # Скачиваем и распаковываем Android SDK
         mkdir -p $HOME/Android
         cd $HOME/Android
         wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
         unzip commandlinetools-linux-7583922_latest.zip
-
-        # Принимаем все лицензии
         yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android --licenses
-
-        # Устанавливаем компоненты SDK (с стабильными версиями)
         yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android --install "platform-tools" "platforms;android-31" "build-tools;30.0.3" "ndk;21.3.6528147" "extras;android;m2repository"
-
-        # Проверка наличия AIDL
         if [ ! -f "$HOME/Android/build-tools/30.0.3/aidl" ]; then
-          echo "AIDL не найден, попробуем установить build-tools 30.0.3"
+          echo "AIDL not found, installing build-tools 30.0.3"
           yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android --install "build-tools;30.0.3"
         fi
-
-        # Устанавливаем переменные среды для Android SDK
         echo "export ANDROID_HOME=$HOME/Android" >> $GITHUB_ENV
         echo "export PATH=$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools/bin:$PATH" >> $GITHUB_ENV
 
-    # Шаг 4: Сборка APK с Buildozer
     - name: Build APK
       run: |
-        buildozer android debugх
+        buildozer android debug
