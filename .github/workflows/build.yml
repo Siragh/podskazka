@@ -44,19 +44,7 @@ jobs:
           path: ${{ steps.buildozer.outputs.filename }}
           name: Build APK
 
-on:
-  push:
-    branches:
-      - main  # Укажите ветку, для которой нужно запускать процесс
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-    # 1. Проверить репозиторий
-    - name: Checkout code
-      uses: actions/checkout@v3
 
     # 2. Установить зависимости
     - name: Set up environment
