@@ -23,7 +23,7 @@ jobs:
 
         pip install --upgrade buildozer cython
 
-    # Шаг 3: Установка Android SDK вручную
+    # Шаг 3: Установка Android SDK
     - name: Install Android SDK
       run: |
         # Скачиваем и распаковываем Android SDK
@@ -32,7 +32,8 @@ jobs:
         wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
         unzip commandlinetools-linux-7583922_latest.zip
 
-        # Устанавливаем компоненты SDK
+        # Принимаем лицензии и устанавливаем компоненты SDK
+        yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android --licenses
         yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android --install "platform-tools" "platforms;android-31" "build-tools;31.0.0" "ndk;21.3.6528147" "extras;android;m2repository" "build-tools;30.0.3"
 
         # Устанавливаем переменные среды для Android SDK
