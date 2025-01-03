@@ -35,7 +35,7 @@ jobs:
         # Принимаем лицензии
         yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android --licenses
 
-        # Устанавливаем компоненты SDK
+        # Устанавливаем компоненты SDK (устаревшая версия сборки)
         yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android --install "platform-tools" "platforms;android-31" "build-tools;30.0.3" "ndk;21.3.6528147" "extras;android;m2repository"
 
         # Устанавливаем переменные среды для Android SDK
