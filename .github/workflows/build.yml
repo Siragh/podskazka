@@ -32,11 +32,17 @@ jobs:
         wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
         unzip commandlinetools-linux-7583922_latest.zip
 
-        # Принимаем лицензии
+        # Принимаем все лицензии
         yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android --licenses
 
-        # Устанавливаем компоненты SDK (изменена версия build-tools на стабильную)
+        # Устанавливаем компоненты SDK (с стабильными версиями)
         yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android --install "platform-tools" "platforms;android-31" "build-tools;30.0.3" "ndk;21.3.6528147" "extras;android;m2repository"
+
+        # Проверка наличия AIDL
+        if [ ! -f "$HOME/Android/build-tools/30.0.3/aidl" ]; then
+          echo "AIDL не найден, попробуем установить build-tools 30.0.3"
+          yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android --install "build-tools;30.0.3"
+        fi
 
         # Устанавливаем переменные среды для Android SDK
         echo "export ANDROID_HOME=$HOME/Android" >> $GITHUB_ENV
@@ -45,4 +51,4 @@ jobs:
     # Шаг 4: Сборка APK с Buildozer
     - name: Build APK
       run: |
-        buildozer android debug
+        buildozer android debugх
