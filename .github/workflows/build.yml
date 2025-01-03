@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '8'
-          distribution: 'adoptopenjdk' # Добавлен параметр для указания дистрибутива
+          distribution: 'temurin'  # Используется temurin вместо adoptopenjdk
 
       # Install Android SDK
       - name: Install Android SDK
