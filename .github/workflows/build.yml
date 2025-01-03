@@ -31,7 +31,7 @@ jobs:
         mkdir cmdline-tools
         unzip -q commandlinetools-linux-9477386_latest.zip -d cmdline-tools
         mv cmdline-tools/cmdline-tools $HOME/.buildozer/android/platform/cmdline-tools/latest
-        yes | $HOME/.buildozer/android/platform/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk \
+        $HOME/.buildozer/android/platform/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk \
           "platform-tools" "build-tools;31.0.0" "platforms;android-31"
 
     # Проверяем и билдим проект с помощью Buildozer
