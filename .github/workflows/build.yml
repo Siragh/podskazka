@@ -23,28 +23,14 @@ jobs:
 
         pip install --upgrade buildozer cython
 
-    # Шаг 3: Установка Android SDK
-    - name: Install Android SDK
-      run: |
-        mkdir -p $HOME/.buildozer/android/platform
-        cd $HOME/.buildozer/android/platform
+    # Шаг 3: Установка Android SDK с использованием GitHub Action
+    - name: Setup Android SDK
+      uses: react-native-community/github-actions/setup-android-sdk@v2
+      with:
+        android-sdk-version: 31
+        ndk-version: 21.3.6528147
 
-        # Скачиваем и распаковываем Android command-line tools
-        wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-        unzip -q commandlinetools-linux-9477386_latest.zip -d cmdline-tools
-
-        # Создаем папку для последней версии инструментов
-        mkdir -p cmdline-tools/latest
-        mv cmdline-tools/cmdline-tools/* cmdline-tools/latest/
-
-        # Убедимся, что sdkmanager существует и работает
-        ls cmdline-tools/latest/bin/
-
-        # Устанавливаем sdkmanager и компоненты Android SDK
-        yes | $HOME/.buildozer/android/platform/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk \
-          "platform-tools" "build-tools;31.0.0" "platforms;android-31" "ndk;21.3.6528147"
-
-    # Шаг 4: Сборка APK
+    # Шаг 4: Сборка APK с Buildozer
     - name: Build APK
       run: |
         buildozer android debug
