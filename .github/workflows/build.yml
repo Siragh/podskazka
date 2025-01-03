@@ -18,34 +18,37 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '8'
-          distribution: 'temurin'  # Используется temurin вместо adoptopenjdk
+          distribution: 'temurin'
 
       # Install Android SDK
       - name: Install Android SDK
         run: |
           # Create Android SDK directory
-          mkdir -p $HOME/Android
+          mkdir -p $HOME/Android/cmdline-tools
           cd $HOME/Android
           
           # Download and extract command-line tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
-          unzip commandlinetools-linux-7583922_latest.zip
+          unzip commandlinetools-linux-7583922_latest.zip -d cmdline-tools
           
+          # Move extracted folder to correct location
+          mv $HOME/Android/cmdline-tools/cmdline-tools $HOME/Android/cmdline-tools/latest
+
           # Accept licenses for SDK components
-          echo y | $HOME/Android/cmdline-tools/bin/sdkmanager --licenses
+          echo y | $HOME/Android/cmdline-tools/latest/bin/sdkmanager --licenses
           
           # Install necessary SDK components
-          $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android --install "platform-tools" "platforms;android-31" "build-tools;30.0.3" "ndk;21.3.6528147" "extras;android;m2repository"
+          $HOME/Android/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/Android --install "platform-tools" "platforms;android-31" "build-tools;30.0.3" "ndk;21.3.6528147" "extras;android;m2repository"
           
           # Check if AIDL is available and install necessary build-tools if not found
           if [ ! -f "$HOME/Android/build-tools/30.0.3/aidl" ]; then
             echo "AIDL not found, installing build-tools 30.0.3"
-            $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android --install "build-tools;30.0.3"
+            $HOME/Android/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/Android --install "build-tools;30.0.3"
           fi
           
           # Set environment variables for Android SDK
           echo "export ANDROID_HOME=$HOME/Android" >> $GITHUB_ENV
-          echo "export PATH=$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools/bin:$PATH" >> $GITHUB_ENV
+          echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools/bin:$PATH" >> $GITHUB_ENV
 
       # Install Buildozer dependencies and build APK
       - name: Install Buildozer dependencies
