@@ -19,7 +19,8 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y \
-          python3 python3-pip python3-setuptools python3-venv git zip unzip openjdk-11-jdk wget
+          python3 python3-pip python3-setuptools python3-venv git zip unzip openjdk-11-jdk wget curl
+
         pip install --upgrade buildozer cython
 
     # Шаг 3: Установка Android SDK
@@ -32,16 +33,16 @@ jobs:
         wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
         unzip -q commandlinetools-linux-9477386_latest.zip -d cmdline-tools
 
-        # Устанавливаем sdkmanager
+        # Устанавливаем sdkmanager и другие компоненты
         mkdir -p cmdline-tools/latest
         mv cmdline-tools/cmdline-tools/* cmdline-tools/latest/
 
         # Убедимся, что sdkmanager существует и работает
         ls cmdline-tools/latest/bin/
         
-        # Устанавливаем необходимые компоненты
-        $HOME/.buildozer/android/platform/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk \
-          "platform-tools" "build-tools;31.0.0" "platforms;android-31"
+        # Устанавливаем необходимые компоненты Android SDK
+        yes | $HOME/.buildozer/android/platform/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk \
+          "platform-tools" "build-tools;31.0.0" "platforms;android-31" "ndk;21.3.6528147"
 
     # Шаг 4: Сборка APK
     - name: Build APK
