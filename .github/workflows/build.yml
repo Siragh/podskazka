@@ -1,40 +1,41 @@
-name: Build APK
+name: Buildozer Android Build
 
 on:
   push:
     branches:
-      - main  # Укажите ветку, для которой нужно запускать процесс
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Проверить репозиторий
+    # Проверяем код из репозитория
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # 2. Установить зависимости
-    - name: Set up environment
+    # Устанавливаем зависимости для Buildozer
+    - name: Set up dependencies
       run: |
         sudo apt update
-        sudo apt install -y libffi-dev libssl-dev python3-dev python3-pip git zip unzip
-        pip install --upgrade pip
-        pip install buildozer
+        sudo apt install -y \
+          python3 python3-pip python3-setuptools python3-venv git zip unzip openjdk-11-jdk
+        pip install --upgrade buildozer cython
 
-    # 3. Установить Android SDK
+    # Устанавливаем Android SDK
     - name: Install Android SDK
       run: |
         mkdir -p $HOME/.buildozer/android/platform
         cd $HOME/.buildozer/android/platform
         wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+        mkdir cmdline-tools
         unzip commandlinetools-linux-9477386_latest.zip -d cmdline-tools
-        mv cmdline-tools $HOME/.buildozer/android/platform/cmdline-tools/latest
+        mkdir -p cmdline-tools/latest
+        mv cmdline-tools/bin cmdline-tools/lib cmdline-tools/latest/
         yes | $HOME/.buildozer/android/platform/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk \
           "platform-tools" "build-tools;31.0.0" "platforms;android-31"
 
-    # 4. Сборка приложения
+    # Проверяем и билдим проект с помощью Buildozer
     - name: Build APK
       run: |
-        cd $GITHUB_WORKSPACE
         buildozer android debug
