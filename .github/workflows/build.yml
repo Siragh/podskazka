@@ -58,9 +58,9 @@ jobs:
           ANDROID_HOME: $HOME/Android
 
       # Шаг: Инициализация Buildozer
-      - name: Initialize Buildozer
-        run: |
-          buildozer init
+    #  - name: Initialize Buildozer
+     #   run: |
+       #   buildozer init
 
       # Шаг: Сборка проекта с использованием Buildozer
       - name: Build with Buildozer
