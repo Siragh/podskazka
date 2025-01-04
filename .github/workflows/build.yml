@@ -34,17 +34,14 @@ jobs:
           # Move extracted folder to correct location
           mv $HOME/Android/cmdline-tools/cmdline-tools $HOME/Android/cmdline-tools/latest
 
-          # Accept licenses for SDK components
-          echo y | $HOME/Android/cmdline-tools/latest/bin/sdkmanager --licenses
-          
-          # Install necessary SDK components
-          $HOME/Android/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/Android --install "platform-tools" "platforms;android-31" "build-tools;30.0.3" "ndk;21.3.6528147" "extras;android;m2repository"
-          
-          # Check if AIDL is available and install necessary build-tools if not found
-          if [ ! -f "$HOME/Android/build-tools/30.0.3/aidl" ]; then
-            echo "AIDL not found, installing build-tools 30.0.3"
-            $HOME/Android/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/Android --install "build-tools;30.0.3"
-          fi
+          # Accept licenses and install SDK components
+          yes | $HOME/Android/cmdline-tools/latest/bin/sdkmanager --licenses
+          $HOME/Android/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/Android --install \
+            "platform-tools" \
+            "platforms;android-31" \
+            "build-tools;30.0.3" \
+            "ndk;21.3.6528147" \
+            "extras;android;m2repository"
           
           # Set environment variables for Android SDK
           echo "export ANDROID_HOME=$HOME/Android" >> $GITHUB_ENV
