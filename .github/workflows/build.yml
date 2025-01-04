@@ -23,12 +23,12 @@ jobs:
           distribution: 'temurin'
 
       # Шаг: Установка Python, Buildozer и Cython
-      - name: Install dependencies
+      - name: Install Python, Buildozer, and Cython
         run: |
           sudo apt update
           sudo apt install -y python3 python3-pip
           pip3 install --upgrade buildozer
-          pip3 install cython  # Установка Cython
+          pip3 install cython
 
       # Шаг: Установка Android SDK
       - name: Install Android SDK
@@ -38,20 +38,29 @@ jobs:
           wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
           unzip commandlinetools-linux-9477386_latest.zip
           mv cmdline-tools latest
-          yes | $HOME/Android/cmdline-tools/latest/bin/sdkmanager --licenses
-          $HOME/Android/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-31" "build-tools;31.0.0"
-        env:
-          ANDROID_HOME: $HOME/Android
+          
+          # Установка платформы и build-tools
+          yes | $HOME/Android/cmdline-tools/latest/bin/sdkmanager --update
+          yes | $HOME/Android/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-31" "build-tools;31.0.0"
 
-      # Шаг: Отладка, проверка структуры файлов
+      # Шаг: Принятие лицензий SDK
+      - name: Accept SDK licenses
+        run: |
+          yes | $HOME/Android/cmdline-tools/latest/bin/sdkmanager --licenses
+
+      # Шаг: Проверка структуры файлов SDK
       - name: Debug Check file structure
         run: |
-          ls -R $HOME/Android/cmdline-tools
+          ls -R $HOME/Android/cmdline-tools/latest/
         env:
           ANDROID_HOME: $HOME/Android
 
-      # Шаг: Сборка проекта с помощью Buildozer
-      - name: Install Buildozer dependencies
+      # Шаг: Инициализация Buildozer (создание buildozer.spec)
+      - name: Initialize Buildozer
         run: |
           buildozer init
+
+      # Шаг: Сборка проекта с использованием Buildozer
+      - name: Build with Buildozer
+        run: |
           buildozer android debug
