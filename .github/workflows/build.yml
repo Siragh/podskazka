@@ -1,62 +1,80 @@
-name: Build APK
+name: 'Kivy App to APK'
+description: 'Convert Kivy app to APK'
+inputs:
+  python-version:
+    description: 'Python version to use'
+    default: '3.8'
+  work-dir:
+    default: '.'
+    description: 'Working directory'
+  buildozer-cmd:
+    default: 'buildozer android debug'
+    description: 'Buildozer command to use'
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+# Add the branding section
+branding:
+  color: 'green'
+  icon: 'play'
 
-jobs:
-  build:
-    runs-on: ubuntu-24.04
-    steps:
-    
-      # Checkout the code from the repository
-      - name: Checkout repository
-        uses: actions/checkout@v2
+runs:
+  using: "composite"
+  steps:
+    - name: Setup python
+      uses: actions/setup-python@v5
+      with:
+        architecture: x64
+        python-version: ${{ inputs.python-version }}
 
-      # Set up Python environment
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
+    - name: Setup Java 17 required by Gradle
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'  # or 'zulu','liberica', etc.
+        java-version: '17'
 
-      # Install necessary dependencies
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y python3-pip python3-dev build-essential libssl-dev libffi-dev libsqlite3-dev git
-          python3 -m pip install --upgrade pip
-          python3 -m pip install buildozer==2.0.0 python-for-android==2022.5.9
+    - name: Set JAVA_HOME
+      run: |
+        echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
+      shell: bash
 
-      # Clean previous build (if any)
-      - name: Clean previous build
-        run: |
-          cd /home/runner/work/podskazka/podskazka
-          buildozer android clean
+    - name: Prepare virtual environment
+      run: |
+        python3 -m venv venv
+        source venv/bin/activate
+        echo "Using Python==$(python --version)"
+      shell: bash
+      
+    - name: Install and upgrade dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y git \
+          zip \
+          unzip \
+          openjdk-17-jdk \
+          python3-pip \
+          autoconf \
+          libtool \
+          pkg-config \
+          zlib1g-dev \
+          libncurses5-dev \
+          libncursesw5-dev \
+          libtinfo5 \
+          cmake \
+          libffi-dev \
+          libssl-dev
+        export PATH=$PATH:~/.local/bin/
+        python3 -m pip install --upgrade \
+          Cython==0.29.33 \
+          buildozer
+      shell: bash
 
-      # Ensure necessary directories exist
-      - name: Ensure necessary directories
-        run: |
-          mkdir -p /home/runner/work/podskazka/podskazka/.buildozer/android/platform/python-for-android
-          mkdir -p /home/runner/work/podskazka/podskazka/.buildozer/android/platform/build-arm64-v8a
+    - name: Install requirements in requirements.txt if it exists
+      run: |
+        if [ -f requirements.txt ]; then
+          python3 -m pip install -r requirements.txt
+        fi
+      shell: bash
 
-      # Install python-for-android
-      - name: Install python-for-android
-        run: |
-          python3 -m pip install python-for-android
-
-      # Build APK
-      - name: Build APK with Buildozer
-        run: |
-          cd /home/runner/work/podskazka/podskazka
-          buildozer -v android debug
-
-      # Upload the generated APK as an artifact (optional)
-      - name: Upload APK as artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: app-debug.apk
-          path: /home/runner/work/podskazka/podskazka/.buildozer/android/platform/build-arm64-v8a/bin/app-debug.apk
+    - name: Build with Buildozer
+      run: |
+        ${{ inputs.buildozer-cmd }}
+      shell: bash
