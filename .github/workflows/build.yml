@@ -38,15 +38,17 @@ jobs:
           wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
           unzip commandlinetools-linux-9477386_latest.zip
           mv cmdline-tools latest
-          
-          # Установка платформы и build-tools
-          yes | $HOME/Android/cmdline-tools/latest/bin/sdkmanager --update
-          yes | $HOME/Android/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-31" "build-tools;31.0.0"
 
-      # Шаг: Принятие лицензий SDK
+      # Шаг: Установка платформы и build-tools
+      - name: Install Platform and Build Tools
+        run: |
+          $HOME/Android/cmdline-tools/latest/bin/sdkmanager --update
+          $HOME/Android/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-31" "build-tools;31.0.0"
+
+      # Шаг: Принятие SDK лицензий вручную
       - name: Accept SDK licenses
         run: |
-          yes | $HOME/Android/cmdline-tools/latest/bin/sdkmanager --licenses
+          $HOME/Android/cmdline-tools/latest/bin/sdkmanager --licenses
 
       # Шаг: Проверка структуры файлов SDK
       - name: Debug Check file structure
@@ -55,7 +57,7 @@ jobs:
         env:
           ANDROID_HOME: $HOME/Android
 
-      # Шаг: Инициализация Buildozer (создание buildozer.spec)
+      # Шаг: Инициализация Buildozer
       - name: Initialize Buildozer
         run: |
           buildozer init
