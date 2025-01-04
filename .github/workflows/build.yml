@@ -22,12 +22,13 @@ jobs:
           java-version: 11
           distribution: 'temurin'
 
-      # Шаг: Установка Python и Buildozer
+      # Шаг: Установка Python, Buildozer и Cython
       - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install -y python3 python3-pip
           pip3 install --upgrade buildozer
+          pip3 install cython  # Установка Cython
 
       # Шаг: Установка Android SDK
       - name: Install Android SDK
@@ -50,7 +51,6 @@ jobs:
           ANDROID_HOME: $HOME/Android
 
       # Шаг: Сборка проекта с помощью Buildozer
-      - name: Build APK
+      - name: Install Buildozer dependencies
         run: |
-          buildozer init
           buildozer android debug
