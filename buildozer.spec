@@ -102,7 +102,7 @@ fullscreen = 0
 #android.api = 27
 
 # (int) Minimum API your APK / AAB will support.
-android.minapi = 21
+#android.minapi = 21
 
 # (int) Android SDK version to use
 #android.sdk = 20
