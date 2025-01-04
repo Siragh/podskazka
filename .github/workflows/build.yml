@@ -27,9 +27,9 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y python3-pip python3-dev build-essential libssl-dev libffi-dev libsqlite3-dev
+          sudo apt install -y python3-pip python3-dev build-essential libssl-dev libffi-dev libsqlite3-dev git
           python3 -m pip install --upgrade pip
-          python3 -m pip install buildozer python-for-android
+          python3 -m pip install buildozer==2.0.0 python-for-android==2022.5.9
 
       # Clean previous build (if any)
       - name: Clean previous build
@@ -37,13 +37,13 @@ jobs:
           cd /home/runner/work/podskazka/podskazka
           buildozer android clean
 
-      # Create missing directories
-      - name: Create missing directories
+      # Ensure necessary directories exist
+      - name: Ensure necessary directories
         run: |
           mkdir -p /home/runner/work/podskazka/podskazka/.buildozer/android/platform/python-for-android
           mkdir -p /home/runner/work/podskazka/podskazka/.buildozer/android/platform/build-arm64-v8a
 
-      # Install python-for-android (if needed)
+      # Install python-for-android
       - name: Install python-for-android
         run: |
           python3 -m pip install python-for-android
