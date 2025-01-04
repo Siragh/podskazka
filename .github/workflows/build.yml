@@ -39,11 +39,6 @@ jobs:
           unzip commandlinetools-linux-9477386_latest.zip
           mv cmdline-tools latest
 
-          - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y autoconf libtool
-
       # Шаг: Установка платформы и build-tools
       - name: Install Platform and Build Tools
         run: |
