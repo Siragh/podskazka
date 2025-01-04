@@ -1,4 +1,4 @@
-name: Build APK
+name: Buildozer Android Build
 
 on:
   push:
@@ -8,53 +8,41 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      # Checkout the repository
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      # Set up Java JDK
-      - name: Set up Java 8
-        uses: actions/setup-java@v2
-        with:
-          java-version: '8'
-          distribution: 'temurin'
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
 
-      # Install Android SDK
-      - name: Install Android SDK
-        run: |
-          # Create Android SDK directory
-          mkdir -p $HOME/Android/cmdline-tools
-          cd $HOME/Android
-          
-          # Download and extract command-line tools
-          wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
-          unzip commandlinetools-linux-7583922_latest.zip -d cmdline-tools
-          
-          # Move extracted folder to correct location
-          mv $HOME/Android/cmdline-tools/cmdline-tools $HOME/Android/cmdline-tools/latest
+    - name: Install Buildozer dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y python3-pip python3-setuptools python3-virtualenv zip openjdk-11-jdk wget unzip libffi-dev libssl-dev
+        pip install --upgrade pip
 
-          # Accept licenses and install SDK components
-          yes | $HOME/Android/cmdline-tools/latest/bin/sdkmanager --licenses
-          $HOME/Android/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/Android --install \
-            "platform-tools" \
-            "platforms;android-31" \
-            "build-tools;30.0.3" \
-            "ndk;21.3.6528147" \
-            "extras;android;m2repository"
-          
-          # Set environment variables for Android SDK
-          echo "export ANDROID_HOME=$HOME/Android" >> $GITHUB_ENV
-          echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools/bin:$PATH" >> $GITHUB_ENV
+    - name: Set up Buildozer and Cython
+      run: |
+        pip install buildozer Cython
 
-      # Install Buildozer dependencies and Cython
-      - name: Install Buildozer dependencies and Cython
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential python3-dev python3-pip
-          pip3 install buildozer cython
+    - name: Install Android SDK and accept licenses
+      env:
+        ANDROID_HOME: $HOME/Android
+      run: |
+        mkdir -p $ANDROID_HOME/cmdline-tools
+        cd $ANDROID_HOME/cmdline-tools
+        wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O tools.zip
+        unzip tools.zip
+        mv cmdline-tools latest
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-31" "build-tools;31.0.0"
 
-      # Run Buildozer to build APK
-      - name: Build APK with Buildozer
-        run: |
-          buildozer android debug
+    - name: Build the APK
+      run: |
+        buildozer android debug
+      env:
+        ANDROID_HOME: $HOME/Android
+        PATH: $HOME/Android/platform-tools:$PATH
