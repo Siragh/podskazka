@@ -3,8 +3,8 @@ name: Build APK
 on:
   push:
     branches:
-      - main
-  pull_request:
+      [main]
+  
 
 jobs:
   build:
@@ -12,57 +12,17 @@ jobs:
 
     steps:
       # Шаг: Проверка последней версии репозитория
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      
+        -uses: actions/checkout@v4
 
-      # Шаг: Установка Java
-      - name: Set up JDK
-        uses: actions/setup-java@v3
+    
+      - name: Build APK
+        uses: digreatbrian/buildozer-action@v2
         with:
-          java-version: 11
-          distribution: 'temurin'
-
-      # Шаг: Установка Python, Buildozer и Cython
-      - name: Install Python, Buildozer, and Cython
-        run: |
-          sudo apt update
-          sudo apt install -y python3 python3-pip
-          pip3 install --upgrade buildozer
-          pip3 install cython
-
-      # Шаг: Установка Android SDK
-      - name: Install Android SDK
-        run: |
-          mkdir -p $HOME/Android/cmdline-tools
-          cd $HOME/Android/cmdline-tools
-          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-          unzip commandlinetools-linux-9477386_latest.zip
-          mv cmdline-tools latest
-
-      # Шаг: Установка платформы и build-tools
-      - name: Install Platform and Build Tools
-        run: |
-          $HOME/Android/cmdline-tools/latest/bin/sdkmanager --update
-          yes | $HOME/Android/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-31" "build-tools;31.0.0"
-
-      # Шаг: Принятие SDK лицензий
-      - name: Accept SDK licenses
-        run: |
-          yes | $HOME/Android/cmdline-tools/latest/bin/sdkmanager --licenses
-
-      # Шаг: Проверка структуры файлов SDK
-      - name: Debug Check file structure
-        run: |
-          ls -R $HOME/Android/cmdline-tools/latest/
-        env:
-          ANDROID_HOME: $HOME/Android
-
-      # Шаг: Инициализация Buildozer
-    #  - name: Initialize Buildozer
-     #   run: |
-       #   buildozer init
-
-      # Шаг: Сборка проекта с использованием Buildozer
-      - name: Build with Buildozer
-        run: |
-          buildozer android debug
+          python-version: 3.8 
+          buildozer-cmd: bulldozer -v android debug 
+          -name: Upload artifacts 
+          uses: actions/upload-artifact@v4 
+          with: 
+          name: package 
+          path:./bin/*.apk
