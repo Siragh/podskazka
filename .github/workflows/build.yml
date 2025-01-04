@@ -50,4 +50,12 @@ jobs:
       # Build APK
       - name: Build APK with Buildozer
         run: |
-          cd /home
+          cd /home/runner/work/podskazka/podskazka
+          buildozer -v android debug
+
+      # Upload the generated APK as an artifact (optional)
+      - name: Upload APK as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-debug.apk
+          path: /home/runner/work/podskazka/podskazka/.buildozer/android/platform/build-arm64-v8a/bin/app-debug.apk
