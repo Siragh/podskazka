@@ -4,45 +4,50 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-
+    runs-on: ubuntu-24.04
     steps:
-    # Шаг 1: Клонирование репозитория
-    - name: Checkout repository
-      uses: actions/checkout@v2
+    
+      # Checkout the code from the repository
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    # Шаг 2: Установка Python
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
+      # Set up Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
 
-    # Шаг 3: Установка зависимостей для сборки
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y autoconf libtool build-essential
-        sudo apt-get install -y python3-dev python3-pip
-        sudo apt-get install -y unzip
-        sudo apt-get install -y openjdk-8-jdk
+      # Install necessary dependencies
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip python3-dev build-essential libssl-dev libffi-dev libsqlite3-dev
+          python3 -m pip install --upgrade pip
+          python3 -m pip install buildozer python-for-android
 
-    # Шаг 4: Установка Buildozer
-    - name: Install Buildozer
-      run: |
-        python3 -m pip install --upgrade pip
-        pip install buildozer
+      # Clean previous build (if any)
+      - name: Clean previous build
+        run: |
+          cd /home/runner/work/podskazka/podskazka
+          buildozer android clean
 
-    # Шаг 5: Очистка старой сборки (если необходимо)
-    - name: Clean previous build
-      run: |
-        cd /home/runner/work/podskazka/podskazka
-        buildozer android clean
+      # Create missing directories
+      - name: Create missing directories
+        run: |
+          mkdir -p /home/runner/work/podskazka/podskazka/.buildozer/android/platform/python-for-android
 
-    # Шаг 6: Сборка APK
-    - name: Build APK with Buildozer
-      run: |
-        cd /home/runner/work/podskazka/podskazka
-        buildozer android debug --debug
+      # Install python-for-android (if needed)
+      - name: Install python-for-android
+        run: |
+          python3 -m pip install python-for-android
+
+      # Build APK
+      - name: Build APK with Buildozer
+        run: |
+          cd /home
