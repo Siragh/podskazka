@@ -41,6 +41,7 @@ jobs:
       - name: Create missing directories
         run: |
           mkdir -p /home/runner/work/podskazka/podskazka/.buildozer/android/platform/python-for-android
+          mkdir -p /home/runner/work/podskazka/podskazka/.buildozer/android/platform/build-arm64-v8a
 
       # Install python-for-android (if needed)
       - name: Install python-for-android
