@@ -43,7 +43,7 @@ jobs:
           ANDROID_HOME: $HOME/Android
 
       # Шаг: Отладка, проверка структуры файлов
-      - name: Debug: Check file structure
+      - name: Debug Check file structure
         run: |
           ls -R $HOME/Android/cmdline-tools
         env:
