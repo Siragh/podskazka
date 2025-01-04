@@ -43,12 +43,12 @@ jobs:
       - name: Install Platform and Build Tools
         run: |
           $HOME/Android/cmdline-tools/latest/bin/sdkmanager --update
-          $HOME/Android/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-31" "build-tools;31.0.0"
+          yes | $HOME/Android/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-31" "build-tools;31.0.0"
 
-      # Шаг: Принятие SDK лицензий вручную
+      # Шаг: Принятие SDK лицензий
       - name: Accept SDK licenses
         run: |
-          $HOME/Android/cmdline-tools/latest/bin/sdkmanager --licenses
+          yes | $HOME/Android/cmdline-tools/latest/bin/sdkmanager --licenses
 
       # Шаг: Проверка структуры файлов SDK
       - name: Debug Check file structure
