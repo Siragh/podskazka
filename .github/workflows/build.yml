@@ -1,4 +1,4 @@
-name: Build APK
+hname: Build APK
 
 on:
   push:
@@ -53,4 +53,5 @@ jobs:
       # Шаг: Сборка проекта с помощью Buildozer
       - name: Install Buildozer dependencies
         run: |
+          bulldozer init
           buildozer android debug
