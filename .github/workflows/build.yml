@@ -1,54 +1,57 @@
-name: Buildozer Android Build
+name: Build APK
 
 on:
   push:
     branches:
       - main
+  pull_request:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      # Проверка на последнюю версию репозитория
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
+      # Установка Java
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 11
+          distribution: 'temurin'
 
-    - name: Install Buildozer dependencies
-      run: |
-        sudo apt update
-        sudo apt install -y python3-pip python3-setuptools python3-virtualenv zip openjdk-11-jdk wget unzip libffi-dev libssl-dev
-        pip install --upgrade pip
+      # Установка необходимых зависимостей
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y python3 python3-pip
+          pip3 install --upgrade buildozer
 
-    - name: Set up Buildozer and Cython
-      run: |
-        pip install buildozer Cython
+      # Установка Android SDK
+      - name: Install Android SDK
+        run: |
+          mkdir -p $HOME/Android/cmdline-tools
+          cd $HOME/Android/cmdline-tools
+          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+          unzip commandlinetools-linux-9477386_latest.zip
+          mv cmdline-tools latest
+          yes | $HOME/Android/cmdline-tools/latest/bin/sdkmanager --licenses
+          $HOME/Android/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-31" "build-tools;31.0.0"
 
-    - name: Install Android SDK and accept licenses
-      env:
-        ANDROID_HOME: $HOME/Android
-      run: |
-        mkdir -p $ANDROID_HOME/cmdline-tools
-        cd $ANDROID_HOME/cmdline-tools
-        wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O tools.zip
-        unzip tools.zip -d ./temp
-        mv ./temp/cmdline-tools ./latest || mv ./temp/* ./latest
-        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-31" "build-tools;31.0.0"
+        env:
+          ANDROID_HOME: $HOME/Android
 
-    - name: Debug: Check file structure
-      run: |
-        ls -R $HOME/Android/cmdline-tools
-      env:
-        ANDROID_HOME: $HOME/Android
+      # Отладка: проверка структуры файлов
+      - name: Debug: Check file structure
+        run: |
+          ls -R $HOME/Android/cmdline-tools
+        env:
+          ANDROID_HOME: $HOME/Android
 
-    - name: Build the APK
-      run: |
-        buildozer android debug
-      env:
-        ANDROID_HOME: $HOME/Android
-        PATH: $HOME/Android/platform-tools:$PATH
+      # Сборка проекта с помощью Buildozer
+      - name: Build APK
+        run: |
+          buildozer init
+          buildozer android debug
