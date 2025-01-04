@@ -35,10 +35,16 @@ jobs:
         mkdir -p $ANDROID_HOME/cmdline-tools
         cd $ANDROID_HOME/cmdline-tools
         wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O tools.zip
-        unzip tools.zip
-        mv cmdline-tools/* ./ || mv cmdline-tools latest
+        unzip tools.zip -d ./temp
+        mv ./temp/cmdline-tools ./latest || mv ./temp/* ./latest
         yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
         $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-31" "build-tools;31.0.0"
+
+    - name: Debug: Check file structure
+      run: |
+        ls -R $HOME/Android/cmdline-tools
+      env:
+        ANDROID_HOME: $HOME/Android
 
     - name: Build the APK
       run: |
