@@ -12,11 +12,14 @@ jobs:
         with:
           python-version: 3.8
           buildozer-cmd: buildozer -v android debug
-- name: Check config.log
-  run: |
-    cat /home/runner/work/podskazka/podskazka/.buildozer/android/platform/build-armeabi-v7a_arm64-v8a/build/other_builds/freetype/arm64-v8a__ndk_target_19/freetype/builds/unix/config.log
-      - name: Upload artifacts
+
+  - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: package
           path: ./bin/*.apk
+
+          - name: Check config.log
+  run: |
+    cat /home/runner/work/podskazka/podskazka/.buildozer/android/platform/build-armeabi-v7a_arm64-v8a/build/other_builds/freetype/arm64-v8a__ndk_target_19/freetype/builds/unix/config.log
+    
